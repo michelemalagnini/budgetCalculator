@@ -82,6 +82,17 @@
         cursor: pointer;
       }
 
+      button:disabled {
+        background-color: #cccccc; /* Colore di sfondo per il pulsante disabilitato */
+        color: #666666; /* Colore del testo per il pulsante disabilitato */
+        cursor: not-allowed; /* Cambia il cursore per indicare che il pulsante non è cliccabile */
+        border: 1px solid #999999; /* Colore del bordo per il pulsante disabilitato */
+      }
+
+      button:not(:disabled):hover {
+        background-color: #6b6d76; /* Colore di sfondo al passaggio del mouse per il pulsante abilitato */
+      }
+
       @media (max-width: 600px) {
         body {
           padding: 10px;
@@ -91,7 +102,11 @@
         }
       }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
     <script>
+      let budgetData = {};
+
       function calculateBudget() {
         // Importo inserito dall'utente
         const totalAmount = document.getElementById("amount").value;
@@ -117,12 +132,82 @@
         // Calcola il budget giornaliero
         const dailyBudget = totalAmount / daysUntilSalary;
 
+        // pdf generator
+        budgetData = {
+          totalAmount: totalAmount,
+          salaryDay: salaryDay,
+          currentDate: currentDate.toISOString().split("T")[0],
+          dailyBudget: dailyBudget.toFixed(2),
+          daysUntilSalary: daysUntilSalary,
+        };
         // Mostra il risultato
         document.getElementById(
           "result"
-        ).textContent = `Puoi spendere circa €${dailyBudget.toFixed(
+        ).textContent = `You can spend approximately €${dailyBudget.toFixed(
           2
-        )} al giorno per i prossimi ${daysUntilSalary} giorni.`;
+        )} per day for the next ${daysUntilSalary} days.`;
+        if (totalAmount && salaryDay) {
+          // Abilita il pulsante del download solo dopo il calcolo
+          document.getElementById("downloadPdfButton").disabled = false;
+        }
+      }
+
+      function downloadPdf() {
+        if (!budgetData.totalAmount) {
+          alert("Please calculate the budget first.");
+          return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+
+        // Colori, stili e margini
+        const primaryColor = [63, 81, 181]; // Esempio di blu
+        const secondaryColor = [96, 125, 139]; // Esempio di grigio
+        const margin = 20;
+
+        // Imposta lo sfondo bianco
+        doc.setFillColor(255, 255, 255);
+        doc.rect(0, 0, pageWidth, pageHeight, "F");
+
+        // Aggiungi un riquadro di sfondo colorato per il titolo
+        doc.setFillColor(...primaryColor);
+        doc.rect(margin, margin, pageWidth - margin * 2, 20, "F");
+
+        // Titolo centrato
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        let title = "Budget Summary";
+        let titleWidth = doc.getTextWidth(title);
+        doc.text(title, (pageWidth - titleWidth) / 2, margin + 14);
+
+        // Testo del riepilogo
+        doc.setFontSize(12);
+        doc.setTextColor(...secondaryColor);
+        doc.text(
+          `Total amount: €${budgetData.totalAmount}`,
+          margin,
+          margin + 35
+        );
+        doc.text(
+          `Calculated on: ${budgetData.currentDate}`,
+          margin,
+          margin + 45
+        );
+        doc.text(
+          `Daily budget: €${budgetData.dailyBudget}`,
+          margin,
+          margin + 55
+        );
+        doc.text(
+          `Days until salary: ${budgetData.daysUntilSalary}`,
+          margin,
+          margin + 65
+        );
+
+        doc.save("budget-summary.pdf");
       }
 
       function toggleInfo() {
@@ -133,6 +218,27 @@
           info.style.display = "block";
         }
       }
+
+      document.addEventListener("DOMContentLoaded", (event) => {
+        // Disabilita il pulsante di calcolo al caricamento della pagina
+        document.getElementById("calculateButton").disabled = true;
+
+        // Aggiungi listener di evento per gli input
+        document
+          .getElementById("amount")
+          .addEventListener("input", toggleCalculateButton);
+        document
+          .getElementById("salary-day")
+          .addEventListener("input", toggleCalculateButton);
+
+        function toggleCalculateButton() {
+          // Controlla se entrambi gli input hanno un valore
+          const amount = document.getElementById("amount").value;
+          const salaryDay = document.getElementById("salary-day").value;
+          document.getElementById("calculateButton").disabled =
+            amount === "" || salaryDay === "";
+        }
+      });
     </script>
   </head>
   <body>
@@ -171,7 +277,12 @@
         />
       </div>
 
-      <button onclick="calculateBudget()">Calculate budget</button>
+      <button id="calculateButton" onclick="calculateBudget()">
+        Calculate budget
+      </button>
+      <button id="downloadPdfButton" onclick="downloadPdf()" disabled>
+        Download PDF Summary
+      </button>
 
       <p id="result"></p>
     </div>
