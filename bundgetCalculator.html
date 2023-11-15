@@ -139,40 +139,39 @@
     <div class="container">
       <h1>Budget Calculator</h1>
       <p class="info-toggle" onclick="toggleInfo()">
-        Informazioni e spiegazioni
+        Information and Explanations
       </p>
       <div id="info">
         <p>
-          Usa questo strumento per gestire le tue finanze quotidiane. Inserendo
-          l'importo totale a disposizione e il giorno in cui prevedi di ricevere
-          il prossimo stipendio, il calcolatore fornirà una stima di quanto puoi
-          spendere ogni giorno. Questo ti aiuterà a pianificare le tue spese per
-          assicurarti di non superare il tuo budget prima del prossimo ciclo di
-          pagamento.
+          This budget calculator will help you manage your finances until the
+          next payday. Enter your total available amount and the day you receive
+          your salary to calculate the daily budget you can spend. This tool is
+          useful for planning your expenses and ensuring you live within your
+          means
         </p>
       </div>
 
       <div>
-        <label for="amount">Importo Totale (€):</label>
+        <label for="amount">Total Amount (€):</label>
         <input
           type="number"
           id="amount"
-          placeholder="Inserisci il tuo importo totale"
+          placeholder="Insert the total amount"
         />
       </div>
 
       <div>
-        <label for="salary-day">Giorno dello Stipendio:</label>
+        <label for="salary-day">Payday:</label>
         <input
           type="number"
           id="salary-day"
-          placeholder="Inserisci il giorno dello stipendio"
+          placeholder="Insert the payday"
           min="1"
           max="31"
         />
       </div>
 
-      <button onclick="calculateBudget()">Calcola Budget</button>
+      <button onclick="calculateBudget()">Calculate budget</button>
 
       <p id="result"></p>
     </div>
