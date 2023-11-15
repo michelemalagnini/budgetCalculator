@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Budget Calculator</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f7f6;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #333;
+      }
+
+      .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 340px;
+      }
+
+      h1 {
+        color: #4a4e69;
+        text-align: center;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
+      input,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        box-sizing: border-box;
+      }
+
+      button {
+        border: none;
+        background-color: #4a4e69;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #6b6d76;
+      }
+
+      #result {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      #info {
+        background-color: #e7e9eb;
+        border-left: 5px solid #4a4e69;
+        padding: 10px;
+        margin-bottom: 15px;
+        display: none; /* Nascondi per default */
+      }
+
+      #info.visible {
+        display: block; /* Mostra quando è visibile */
+      }
+
+      .info-toggle {
+        text-decoration: underline;
+        color: #4a4e69;
+        cursor: pointer;
+      }
+
+      @media (max-width: 600px) {
+        body {
+          padding: 10px;
+        }
+        .container {
+          width: 100%;
+        }
+      }
+    </style>
+    <script>
+      function calculateBudget() {
+        // Importo inserito dall'utente
+        const totalAmount = document.getElementById("amount").value;
+        const salaryDay = document.getElementById("salary-day").value;
+
+        // Imposta la data corrente e la data del prossimo stipendio
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+        let nextSalaryDate = new Date(currentYear, currentMonth, salaryDay);
+
+        if (currentDate.getDate() > salaryDay) {
+          // Se siamo oltre il giorno dello stipendio, calcola per il prossimo mese
+          nextSalaryDate = new Date(currentYear, currentMonth + 1, salaryDay);
+        }
+
+        // Calcola la differenza in millisecondi e poi converti in giorni
+        const msPerDay = 24 * 60 * 60 * 1000;
+        const daysUntilSalary = Math.round(
+          (nextSalaryDate - currentDate) / msPerDay
+        );
+
+        // Calcola il budget giornaliero
+        const dailyBudget = totalAmount / daysUntilSalary;
+
+        // Mostra il risultato
+        document.getElementById(
+          "result"
+        ).textContent = `Puoi spendere circa €${dailyBudget.toFixed(
+          2
+        )} al giorno per i prossimi ${daysUntilSalary} giorni.`;
+      }
+
+      function toggleInfo() {
+        var info = document.getElementById("info");
+        if (info.style.display === "block") {
+          info.style.display = "none";
+        } else {
+          info.style.display = "block";
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Budget Calculator</h1>
+      <p class="info-toggle" onclick="toggleInfo()">
+        Informazioni e spiegazioni
+      </p>
+      <div id="info">
+        <p>
+          Usa questo strumento per gestire le tue finanze quotidiane. Inserendo
+          l'importo totale a disposizione e il giorno in cui prevedi di ricevere
+          il prossimo stipendio, il calcolatore fornirà una stima di quanto puoi
+          spendere ogni giorno. Questo ti aiuterà a pianificare le tue spese per
+          assicurarti di non superare il tuo budget prima del prossimo ciclo di
+          pagamento.
+        </p>
+      </div>
+
+      <div>
+        <label for="amount">Importo Totale (€):</label>
+        <input
+          type="number"
+          id="amount"
+          placeholder="Inserisci il tuo importo totale"
+        />
+      </div>
+
+      <div>
+        <label for="salary-day">Giorno dello Stipendio:</label>
+        <input
+          type="number"
+          id="salary-day"
+          placeholder="Inserisci il giorno dello stipendio"
+          min="1"
+          max="31"
+        />
+      </div>
+
+      <button onclick="calculateBudget()">Calcola Budget</button>
+
+      <p id="result"></p>
+    </div>
+  </body>
+</html>
