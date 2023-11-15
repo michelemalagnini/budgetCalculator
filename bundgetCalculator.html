@@ -109,8 +109,29 @@
 
       function calculateBudget() {
         // Importo inserito dall'utente
-        const totalAmount = document.getElementById("amount").value;
+        const totalAmountInput = document.getElementById("amount").value;
+        const savingsInput =
+          parseFloat(document.getElementById("savings").value) || 0; // Usa 0 se non viene inserito nulla
         const salaryDay = document.getElementById("salary-day").value;
+
+        // Converti i valori in numeri
+        const totalAmount = parseFloat(totalAmountInput);
+        const savings = parseFloat(savingsInput) || 0; // Usa 0 se non viene inserito nulla
+
+        // Controllo iniziale per i valori di input
+        if (!totalAmount || !salaryDay) {
+          alert("Please enter both the total amount and payday.");
+          return;
+        }
+
+        // Controlla se i valori sono stati inseriti
+        // if (totalAmountInput === "" || salaryDay === "") {
+        //   alert("Please enter all the required fields.");
+        //   return;
+        // }
+
+        // Calcola l'importo disponibile dopo aver risparmiato
+        const availableAmount = totalAmount - savings;
 
         // Imposta la data corrente e la data del prossimo stipendio
         const currentDate = new Date();
@@ -129,8 +150,8 @@
           (nextSalaryDate - currentDate) / msPerDay
         );
 
-        // Calcola il budget giornaliero
-        const dailyBudget = totalAmount / daysUntilSalary;
+        // Calcola il budget giornaliero disponibile
+        const dailyBudget = availableAmount / daysUntilSalary;
 
         // pdf generator
         budgetData = {
@@ -140,16 +161,17 @@
           dailyBudget: dailyBudget.toFixed(2),
           daysUntilSalary: daysUntilSalary,
         };
-        // Mostra il risultato
+        // Mostra il risultato aggiornato
         document.getElementById(
           "result"
-        ).textContent = `You can spend approximately €${dailyBudget.toFixed(
+        ).textContent = `After saving €${savings.toFixed(
+          2
+        )}, you can spend approximately €${dailyBudget.toFixed(
           2
         )} per day for the next ${daysUntilSalary} days.`;
-        if (totalAmount && salaryDay) {
-          // Abilita il pulsante del download solo dopo il calcolo
-          document.getElementById("downloadPdfButton").disabled = false;
-        }
+
+        // Abilita il pulsante di download PDF
+        document.getElementById("downloadPdfButton").disabled = false;
       }
 
       function downloadPdf() {
@@ -275,6 +297,15 @@
           placeholder="Insert the payday"
           min="1"
           max="31"
+        />
+      </div>
+
+      <div>
+        <label for="savings">Amount to Save (€):</label>
+        <input
+          type="number"
+          id="savings"
+          placeholder="Insert the amount to save"
         />
       </div>
 
