@@ -223,6 +223,9 @@
         // Disabilita il pulsante di calcolo al caricamento della pagina
         document.getElementById("calculateButton").disabled = true;
 
+        // mostra toogle info aperto
+        info.style.display = "block";
+
         // Aggiungi listener di evento per gli input
         document
           .getElementById("amount")
@@ -244,9 +247,7 @@
   <body>
     <div class="container">
       <h1>Budget Calculator</h1>
-      <p class="info-toggle" onclick="toggleInfo()">
-        Information and Explanations
-      </p>
+      <p class="info-toggle" onclick="toggleInfo()">Info</p>
       <div id="info">
         <p>
           This budget calculator will help you manage your finances until the
